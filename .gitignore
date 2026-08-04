@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.notify_config.json
+.crawl_resume.json
+skins.sqlite
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+frontend/dist/
+.DS_Store
+*.log
+snik.zip
