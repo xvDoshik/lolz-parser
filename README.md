@@ -1,43 +1,43 @@
-# Lolz Parser
+EN | [RU](docs/README_RU.md)
 
-Парсер и аналитика лотов **Brawl Stars** с [lzt.market](https://lzt.market) (Lolzteam): краулинг скинов через Playwright, SQLite-база, ранжирование сделок, Telegram-алерты и веб-панель.
+## Lolz Parser 🎮
 
-**Автор:** xv_Dosha
+Parser and analytics for **Brawl Stars** listings from [lzt.market](https://lzt.market) (Lolzteam): Playwright skin crawler, SQLite database, deal ranking, Telegram alerts and web panel.
 
-> Перед запуском: `cp .env.example .env`, `cp .notify_config.example.json .notify_config.json`.
-
----
-
-## Возможности
-
-| Раздел UI | Что делает |
-|-----------|------------|
-| **Парс** | Playwright-краулер по `brawl-stars-skin-urls.txt` → `skins.sqlite` |
-| **Поиск** | Фильтры по скинам, уровню, трофеям, цене |
-| **БД** | Таблица лотов с ссылками на `lzt.market/{id}` |
-| **Opt** | Топ выгодных лотов (scoring) |
-| **OptPrm** | Оптимизация по заданному набору скинов |
-| **Sell** | Сборка bundle для продажи по ID лота |
-| **Notification** | Правила + Telegram bot token → алерты при новых матчах |
-
-Дополнительно:
-
-- **Auth gate** — bcrypt-пароль на весь сайт (`SONIC_GATE_PASSWORD_HASH`)
-- **Resume** — `.crawl_resume.json` продолжает парс с места остановки
-- **Deploy** — systemd + nginx reverse proxy
+> Before running: `cp .env.example .env`, `cp .notify_config.example.json .notify_config.json`.
 
 ---
 
-## Стек
+## ✨ Features
+
+| UI section | What it does |
+|------------|--------------|
+| **Parse** | Playwright crawler over `brawl-stars-skin-urls.txt` → `skins.sqlite` |
+| **Search** | Filters by skins, level, trophies, price |
+| **DB** | Listings table with links to `lzt.market/{id}` |
+| **Opt** | Top deals (scoring) |
+| **OptPrm** | Optimization for a given skin set |
+| **Sell** | Bundle builder for sale by listing ID |
+| **Notification** | Rules + Telegram bot token → alerts on new matches |
+
+Additionally:
+
+- **Auth gate** - bcrypt password for the entire site (`SONIC_GATE_PASSWORD_HASH`)
+- **Resume** - `.crawl_resume.json` continues parsing from where it stopped
+- **Deploy** - systemd + nginx reverse proxy
+
+---
+
+## Stack
 
 - **Backend:** Python 3.11+, FastAPI, uvicorn, Playwright
 - **Frontend:** React + Vite + TypeScript
 - **DB:** SQLite (`skins.sqlite`, WAL)
-- **Парсинг HTML:** `market_listing.py` — разбор карточек lzt.market
+- **HTML parsing:** `market_listing.py` - lzt.market card parser
 
 ---
 
-## Быстрый старт (локально)
+## 🚀 Quick start (local)
 
 ```bash
 cd lolz-parser
@@ -54,9 +54,9 @@ cd frontend && npm ci && npm run build && cd ..
 python main.py
 ```
 
-Открой `http://127.0.0.1:13337/`
+Open `http://127.0.0.1:13337/`
 
-Хеш пароля:
+Password hash:
 
 ```bash
 python -c "import bcrypt; print(bcrypt.hashpw(b'your-password', bcrypt.gensalt()).decode())"
@@ -64,13 +64,13 @@ python -c "import bcrypt; print(bcrypt.hashpw(b'your-password', bcrypt.gensalt()
 
 ---
 
-## Переменные окружения
+## ⚙️ Environment variables
 
-| Переменная | Описание |
-|------------|----------|
-| `SONIC_GATE_PASSWORD_HASH` | bcrypt-хеш; пусто = gate выключен |
-| `SONIC_GATE_ALLOWED_HOSTS` | Разрешённые Host (через запятую) |
-| `SONIC_GATE_ALLOW_HTTP` | `1` — без HTTPS в dev |
+| Variable | Description |
+|----------|-------------|
+| `SONIC_GATE_PASSWORD_HASH` | bcrypt hash; empty = gate disabled |
+| `SONIC_GATE_ALLOWED_HOSTS` | Allowed Host values (comma-separated) |
+| `SONIC_GATE_ALLOW_HTTP` | `1` - no HTTPS in dev |
 
 ### `.notify_config.json`
 
@@ -83,11 +83,11 @@ python -c "import bcrypt; print(bcrypt.hashpw(b'your-password', bcrypt.gensalt()
 }
 ```
 
-Пустой token — фоновые уведомления не отправляются.
+Empty token - background notifications are not sent.
 
 ---
 
-## Продакшн-деплой
+## Production deploy
 
 ```bash
 sudo install -m 644 deploy/lolz-parser.service /etc/systemd/system/lolz-parser.service
@@ -99,11 +99,11 @@ sudo systemctl enable --now lolz-parser
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Uvicorn слушает `127.0.0.1:13337`, nginx проксирует снаружи.
+Uvicorn listens on `127.0.0.1:13337`, nginx proxies from outside.
 
 ---
 
-## Структура
+## Structure
 
 ```
 lolz-parser/
@@ -122,25 +122,25 @@ lolz-parser/
 
 ---
 
-## API (после входа в gate)
+## API (after gate login)
 
-| Endpoint | Описание |
-|----------|----------|
-| `POST /api/gate/login` | Логин |
-| `GET /api/parse/status` | Статус краулера |
-| `POST /api/parse/start` | Старт парсинга |
-| `POST /api/parse/stop` | Стоп |
-| `GET /api/search` | Поиск по БД |
-| `GET /api/optimized` | Топ сделок |
-| `GET/PUT /api/notifications` | Конфиг алертов |
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/gate/login` | Login |
+| `GET /api/parse/status` | Crawler status |
+| `POST /api/parse/start` | Start parsing |
+| `POST /api/parse/stop` | Stop |
+| `GET /api/search` | DB search |
+| `GET /api/optimized` | Top deals |
+| `GET/PUT /api/notifications` | Alert config |
 
 ---
 
-## Безопасность
+## Security
 
-- Не коммить `.env`, `.notify_config.json`, `skins.sqlite`
-- Gate обязателен на публичном домене
-- Playwright требует `chromium`; на Linux часто нужен `playwright install-deps chromium`
+- Do not commit `.env`, `.notify_config.json`, `skins.sqlite`
+- Gate is required on a public domain
+- Playwright requires `chromium`; on Linux you often need `playwright install-deps chromium`
 
 ---
 
